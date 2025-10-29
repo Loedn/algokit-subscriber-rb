@@ -6,6 +6,7 @@
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE.txt)
 
 A Ruby library for subscribing to Algorand blockchain transactions with comprehensive filtering, balance change tracking, and ARC-28 event support.
+This repo is a port of [Algokit Subscriber TS](https://github.com/algorandfoundation/algokit-subscriber-ts)
 
 ## Features
 
@@ -438,7 +439,7 @@ The library is organized into several layers:
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/algorandfoundation/algokit-subscriber-rb.
+Bug reports and pull requests are welcome on GitHub at https://github.com/loedn/algokit-subscriber-rb.
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
