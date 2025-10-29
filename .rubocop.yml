@@ -1,0 +1,93 @@
+AllCops:
+  TargetRubyVersion: 3.1
+  NewCops: enable
+  Exclude:
+    - 'test_stub.rb'
+    - 'test_url.rb'
+    - 'test/**/*'
+    - 'vendor/**/*'
+    - 'bin/**/*'
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+# Allow longer lines for readability
+Layout/LineLength:
+  Max: 130
+
+# Allow ABC size for complex methods
+Metrics/AbcSize:
+  Max: 50
+  Exclude:
+    - 'lib/algokit/subscriber/transform.rb'
+
+# Allow longer methods for complex logic
+Metrics/MethodLength:
+  Max: 110
+  CountAsOne: ["array", "hash", "heredoc"]
+
+# Allow more complex methods
+Metrics/CyclomaticComplexity:
+  Max: 55
+  Exclude:
+    - 'lib/algokit/subscriber/transform.rb'
+
+# Allow higher perceived complexity
+Metrics/PerceivedComplexity:
+  Max: 55
+  Exclude:
+    - 'lib/algokit/subscriber/transform.rb'
+
+# Allow longer blocks in tests and DSLs
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+    - 'examples/**/*'
+    - '*.gemspec'
+
+# Allow long classes for main logic
+Metrics/ClassLength:
+  Max: 250
+
+# Allow long modules for transformation logic
+Metrics/ModuleLength:
+  Max: 250
+
+# Allow more parameters for configuration
+Metrics/ParameterLists:
+  Max: 6
+
+# We use module_function intentionally
+Style/ModuleFunction:
+  Enabled: false
+
+# We prefer descriptive variable names
+Naming/VariableNumber:
+  Enabled: false
+
+# Disable documentation requirement (we use YARD)
+Style/Documentation:
+  Enabled: false
+
+# Allow empty rescue with logging
+Lint/SuppressedException:
+  AllowComments: true
+
+# Allow get_/set_ prefixes for watermark methods
+Naming/AccessorMethodName:
+  Enabled: false
+
+# Allow validate! method
+Naming/PredicateMethod:
+  Enabled: false
+
+# Allow unused method arguments (for interface consistency)
+Lint/UnusedMethodArgument:
+  Enabled: false
+
+# Allow development dependencies in gemspec
+Gemspec/DevelopmentDependencies:
+  Enabled: false
