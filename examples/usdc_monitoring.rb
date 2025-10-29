@@ -6,7 +6,8 @@
 # This example monitors USDC (TestNet Asset ID: 10458941) transfers in real-time.
 # It demonstrates filtering by asset ID and calculating balance changes.
 
-require "bundler/setup"
+# Don't use bundler/setup to avoid gemspec validation issues during development
+$LOAD_PATH.unshift(File.expand_path("../lib", __dir__))
 require "algokit/subscriber"
 require "json"
 
@@ -105,7 +106,7 @@ end
 # Handle large USDC transfers
 subscriber.on("large-usdc-transfers") do |txn|
   stats[:large_transfers] += 1
-  amount = txn.dig("asset-transfer-transaction", "amount")
+  amount = txn.dig("asset-transfer-transaction", "amount") || 0
 
   puts "\n🚨 LARGE USDC TRANSFER!"
   puts "  Amount: #{format_usdc(amount)} USDC"

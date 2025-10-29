@@ -1,3 +1,4 @@
+
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
@@ -6,16 +7,18 @@
 # This example monitors USDC transfers using ONLY the algod client.
 # No indexer is required. This is suitable for real-time monitoring.
 
-require "bundler/setup"
+# Don't use bundler/setup to avoid gemspec validation issues during development
+$LOAD_PATH.unshift(File.expand_path("../lib", __dir__))
 require "algokit/subscriber"
 require "json"
 
 # Configuration
-ALGOD_SERVER = ENV.fetch("ALGOD_SERVER", "https://testnet-api.algonode.cloud")
+ALGOD_SERVER = ENV.fetch("ALGOD_SERVER", "https://mainnet-api.4160.nodely.dev")
 ALGOD_TOKEN = ENV.fetch("ALGOD_TOKEN", "")
 
-# USDC on TestNet (change for MainNet)
-USDC_ASSET_ID = 10_458_941
+# USDC on Mainnet
+USDC_ASSET_ID = 31_566_704
+
 
 # Watermark persistence (file-based for this example)
 WATERMARK_FILE = "usdc_watermark_algod.txt"
@@ -100,7 +103,7 @@ end
 # Handle large USDC transfers
 subscriber.on("large-usdc-transfers") do |txn|
   stats[:large_transfers] += 1
-  amount = txn.dig("asset-transfer-transaction", "amount")
+  amount = txn.dig("asset-transfer-transaction", "amount") || 0
 
   puts "\n🚨 LARGE USDC TRANSFER!"
   puts "  Amount: #{format_usdc(amount)} USDC"

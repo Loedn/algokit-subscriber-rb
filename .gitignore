@@ -6,3 +6,5 @@
 /pkg/
 /spec/reports/
 /tmp/
+*.gem
+*_watermark*.txt

@@ -8,7 +8,8 @@
 # from there, ignoring all historical transactions. This is useful when you only
 # care about NEW transactions going forward, not historical data.
 
-require "bundler/setup"
+# Don't use bundler/setup to avoid gemspec validation issues during development
+$LOAD_PATH.unshift(File.expand_path("../lib", __dir__))
 require "algokit/subscriber"
 require "json"
 
@@ -100,7 +101,7 @@ subscriber.on("usdc-transfers") do |txn|
     puts "\n💵 USDC Transfer"
     puts "  Amount: #{format_usdc(amount)} USDC"
     puts "  From: #{sender[0..10]}...#{sender[-10..]}"
-    puts "  To: #{receiver[0..10]}...#{receiver[-10..]}"
+    puts "  To: #{receiver[0..10]}...#{receiver[-10..]}" if receiver
   end
   
   puts "  Round: #{txn["confirmed-round"]}"
