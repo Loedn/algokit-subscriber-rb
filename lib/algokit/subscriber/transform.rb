@@ -32,8 +32,10 @@ module Algokit
 
         result["intra-round-offset"] = if parent_offset
                                          parent_offset
+                                       elsif signed_txn["hgi"].is_a?(Integer)
+                                         signed_txn["hgi"] + 1
                                        else
-                                         signed_txn["hgi"] ? signed_txn["hgi"] + 1 : 0
+                                         0
                                        end
 
         case txn["type"]

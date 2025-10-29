@@ -156,34 +156,38 @@ module Algokit
         end
 
         # Build query parameters for search_transactions
+        # Handles both symbol and string keys for flexibility
         def build_query_params(params)
           query = {}
 
+          # Helper to get value from params with either symbol or string key
+          get_param = ->(key) { params[key] || params[key.to_s] }
+
           # Round filters
-          query["min-round"] = params[:min_round] if params[:min_round]
-          query["max-round"] = params[:max_round] if params[:max_round]
+          query["min-round"] = get_param[:min_round] if get_param[:min_round]
+          query["max-round"] = get_param[:max_round] if get_param[:max_round]
 
           # Address filters
-          query["address"] = params[:address] if params[:address]
-          query["address-role"] = params[:address_role] if params[:address_role]
+          query["address"] = get_param[:address] if get_param[:address]
+          query["address-role"] = get_param[:address_role] if get_param[:address_role]
 
           # Transaction type
-          query["tx-type"] = params[:tx_type] if params[:tx_type]
+          query["tx-type"] = get_param[:tx_type] if get_param[:tx_type]
 
           # Asset and application filters
-          query["asset-id"] = params[:asset_id] if params[:asset_id]
-          query["application-id"] = params[:application_id] if params[:application_id]
+          query["asset-id"] = get_param[:asset_id] if get_param[:asset_id]
+          query["application-id"] = get_param[:application_id] if get_param[:application_id]
 
           # Note prefix (should be base64 encoded)
-          query["note-prefix"] = params[:note_prefix] if params[:note_prefix]
+          query["note-prefix"] = get_param[:note_prefix] if get_param[:note_prefix]
 
           # Currency filters
-          query["currency-greater-than"] = params[:currency_greater_than] if params[:currency_greater_than]
-          query["currency-less-than"] = params[:currency_less_than] if params[:currency_less_than]
+          query["currency-greater-than"] = get_param[:currency_greater_than] if get_param[:currency_greater_than]
+          query["currency-less-than"] = get_param[:currency_less_than] if get_param[:currency_less_than]
 
           # Pagination
-          query["limit"] = params[:limit] || DEFAULT_LIMIT
-          query["next"] = params[:next] if params[:next]
+          query["limit"] = get_param[:limit] || DEFAULT_LIMIT
+          query["next"] = get_param[:next] if get_param[:next]
 
           query
         end

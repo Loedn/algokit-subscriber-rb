@@ -17,13 +17,47 @@ module Algokit
             )
           end
 
+          # Handle SKIP_SYNC_NEWEST - jump to current round
+          if config.sync_behaviour == Types::SyncBehaviour::SKIP_SYNC_NEWEST
+            return Types::SubscriptionResult.new(
+              starting_watermark: starting_watermark,
+              new_watermark: current_round,
+              synced_round_range: [],
+              current_round: current_round,
+              subscribed_transactions: []
+            )
+          end
+
+          # Handle SYNC_OLDEST_START_NOW - start from current round on first sync
+          if config.sync_behaviour == Types::SyncBehaviour::SYNC_OLDEST_START_NOW && watermark == 0
+            return Types::SubscriptionResult.new(
+              starting_watermark: starting_watermark,
+              new_watermark: current_round,
+              synced_round_range: [],
+              current_round: current_round,
+              subscribed_transactions: []
+            )
+          end
+
+          # Handle FAIL - fail if behind
+          rounds_behind = current_round - watermark
+          if config.sync_behaviour == Types::SyncBehaviour::FAIL && rounds_behind > 0
+            raise Error, "Subscriber is behind by #{rounds_behind} rounds (watermark: #{watermark}, current: #{current_round}). " \
+                         "sync_behaviour is set to FAIL."
+          end
+
           sync_from = watermark + 1
-          sync_to = [watermark + config.max_rounds_to_sync, current_round].min
+          
+          # Handle SYNC_OLDEST - sync all rounds from watermark to current (no max limit)
+          if config.sync_behaviour == Types::SyncBehaviour::SYNC_OLDEST
+            sync_to = current_round
+          else
+            sync_to = [watermark + config.max_rounds_to_sync, current_round].min
+          end
 
           synced_rounds = Utils.range(sync_from, sync_to)
           transactions = []
 
-          rounds_behind = current_round - watermark
           should_use_indexer = indexer &&
                                rounds_behind > config.max_rounds_to_sync &&
                                config.sync_behaviour == Types::SyncBehaviour::CATCHUP_WITH_INDEXER

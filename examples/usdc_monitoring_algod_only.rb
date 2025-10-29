@@ -1,10 +1,10 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# USDC Transfer Monitoring Example
+# USDC Transfer Monitoring Example (Algod Only)
 #
-# This example monitors USDC (TestNet Asset ID: 10458941) transfers in real-time.
-# It demonstrates filtering by asset ID and calculating balance changes.
+# This example monitors USDC transfers using ONLY the algod client.
+# No indexer is required. This is suitable for real-time monitoring.
 
 require "bundler/setup"
 require "algokit/subscriber"
@@ -13,14 +13,12 @@ require "json"
 # Configuration
 ALGOD_SERVER = ENV.fetch("ALGOD_SERVER", "https://testnet-api.algonode.cloud")
 ALGOD_TOKEN = ENV.fetch("ALGOD_TOKEN", "")
-INDEXER_SERVER = ENV.fetch("INDEXER_SERVER", "https://testnet-idx.algonode.cloud")
-INDEXER_TOKEN = ENV.fetch("INDEXER_TOKEN", "")
 
 # USDC on TestNet (change for MainNet)
 USDC_ASSET_ID = 10_458_941
 
 # Watermark persistence (file-based for this example)
-WATERMARK_FILE = "usdc_watermark.txt"
+WATERMARK_FILE = "usdc_watermark_algod.txt"
 
 def load_watermark
   File.read(WATERMARK_FILE).to_i
@@ -32,10 +30,8 @@ def save_watermark(watermark)
   File.write(WATERMARK_FILE, watermark.to_s)
 end
 
-# Create clients
+# Create algod client ONLY (no indexer needed)
 algod = Algokit::Subscriber::Client::AlgodClient.new(ALGOD_SERVER, token: ALGOD_TOKEN)
-# Indexer is optional - subscriber works with algod only for real-time monitoring
-indexer = Algokit::Subscriber::Client::IndexerClient.new(INDEXER_SERVER, token: INDEXER_TOKEN)
 
 # Configure subscription
 config = Algokit::Subscriber::Types::SubscriptionConfig.new(
@@ -57,8 +53,7 @@ config = Algokit::Subscriber::Types::SubscriptionConfig.new(
       }
     }
   ],
-  max_rounds_to_sync: 10,
-  max_indexer_rounds_to_sync: 500,
+  max_rounds_to_sync: 10, # Algod fetches blocks in parallel (batches of 30)
   # Use SYNC_OLDEST_START_NOW to skip historical data and start from current round
   # This prevents waiting for millions of rounds before USDC was created
   sync_behaviour: Algokit::Subscriber::Types::SyncBehaviour::SYNC_OLDEST_START_NOW,
@@ -70,8 +65,8 @@ config = Algokit::Subscriber::Types::SubscriptionConfig.new(
   }
 )
 
-# Create subscriber
-subscriber = Algokit::Subscriber::AlgorandSubscriber.new(config, algod, indexer)
+# Create subscriber with algod only (no indexer parameter)
+subscriber = Algokit::Subscriber::AlgorandSubscriber.new(config, algod)
 
 # Track statistics
 stats = {
@@ -131,10 +126,11 @@ end
 
 # Print startup message
 puts "=" * 70
-puts "USDC Transfer Monitor (TestNet)"
+puts "USDC Transfer Monitor (TestNet) - ALGOD ONLY"
 puts "=" * 70
 puts "Asset ID: #{USDC_ASSET_ID}"
 puts "Starting watermark: #{load_watermark}"
+puts "Mode: Algod only (no indexer)"
 puts "Monitoring all transfers > 0 and highlighting transfers > 1 USDC"
 puts "Press Ctrl+C to stop"
 puts "=" * 70
