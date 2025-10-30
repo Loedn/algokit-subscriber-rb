@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Simple example to test the gem against Algorand TestNet
+# Simple example to test the gem against Algorand MainNet
 # This demonstrates basic usage of the AlgodClient and IndexerClient
 
 require "bundler/setup"
@@ -9,9 +9,9 @@ require "algokit/subscriber"
 
 puts "AlgoKit Subscriber Ruby - Simple Test\n\n"
 
-# Use public TestNet nodes (no authentication required)
-ALGOD_SERVER = "https://testnet-api.algonode.cloud"
-INDEXER_SERVER = "https://testnet-idx.algonode.cloud"
+# Use public MainNet nodes (no authentication required)
+ALGOD_SERVER = "https://mainnet-api.algonode.cloud"
+INDEXER_SERVER = "https://mainnet-idx.algonode.cloud"
 
 # Test AlgodClient
 puts "=" * 60
@@ -105,5 +105,5 @@ puts "  Found #{payments["transactions"].length} payment transactions"
 puts "\n#{"=" * 60}"
 puts "All tests completed successfully! ✓"
 puts "=" * 60
-puts "\nThe gem is working correctly with Algorand TestNet."
+puts "\nThe gem is working correctly with Algorand MainNet."
 puts "You can now use it to build transaction subscribers and indexers."

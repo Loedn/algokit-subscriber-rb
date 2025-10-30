@@ -3,7 +3,7 @@
 
 # USDC Transfer Monitoring Example
 #
-# This example monitors USDC (TestNet Asset ID: 10458941) transfers in real-time.
+# This example monitors USDC (MainNet Asset ID: 31566704) transfers in real-time.
 # It demonstrates filtering by asset ID and calculating balance changes.
 
 # Don't use bundler/setup to avoid gemspec validation issues during development
@@ -12,13 +12,13 @@ require "algokit/subscriber"
 require "json"
 
 # Configuration
-ALGOD_SERVER = ENV.fetch("ALGOD_SERVER", "https://testnet-api.algonode.cloud")
+ALGOD_SERVER = ENV.fetch("ALGOD_SERVER", "https://mainnet-api.algonode.cloud")
 ALGOD_TOKEN = ENV.fetch("ALGOD_TOKEN", "")
-INDEXER_SERVER = ENV.fetch("INDEXER_SERVER", "https://testnet-idx.algonode.cloud")
+INDEXER_SERVER = ENV.fetch("INDEXER_SERVER", "https://mainnet-idx.algonode.cloud")
 INDEXER_TOKEN = ENV.fetch("INDEXER_TOKEN", "")
 
-# USDC on TestNet (change for MainNet)
-USDC_ASSET_ID = 10_458_941
+# USDC on MainNet
+USDC_ASSET_ID = 31_566_704
 
 # Watermark persistence (file-based for this example)
 WATERMARK_FILE = "usdc_watermark.txt"
@@ -132,7 +132,7 @@ end
 
 # Print startup message
 puts "=" * 70
-puts "USDC Transfer Monitor (TestNet)"
+puts "USDC Transfer Monitor (MainNet)"
 puts "=" * 70
 puts "Asset ID: #{USDC_ASSET_ID}"
 puts "Starting watermark: #{load_watermark}"

@@ -14,9 +14,9 @@ require "benchmark"
 # 4. Memory usage during operation
 
 # Configuration
-ALGOD_SERVER = ENV.fetch("ALGOD_SERVER", "https://testnet-api.algonode.cloud")
+ALGOD_SERVER = ENV.fetch("ALGOD_SERVER", "https://mainnet-api.algonode.cloud")
 ALGOD_TOKEN = ENV.fetch("ALGOD_TOKEN", nil)
-INDEXER_SERVER = ENV.fetch("INDEXER_SERVER", "https://testnet-idx.algonode.cloud")
+INDEXER_SERVER = ENV.fetch("INDEXER_SERVER", "https://mainnet-idx.algonode.cloud")
 INDEXER_TOKEN = ENV.fetch("INDEXER_TOKEN", nil)
 
 # Statistics
@@ -46,7 +46,7 @@ puts
 
 # Get current status
 status = algod.status
-current_round = status[:last_round]
+current_round = status["last-round"]
 start_round = [current_round - 100, 1].max
 
 puts "Current Round: #{current_round}"
@@ -73,7 +73,7 @@ filters = [
 ]
 
 time1 = Benchmark.measure do
-  config = Algokit::Subscriber::Config.new(
+  config = Algokit::Subscriber::Types::SubscriptionConfig.new(
     filters: filters,
     max_rounds_to_sync: 100,
     sync_behaviour: "sync-oldest",
@@ -98,20 +98,19 @@ puts "Transactions processed: #{stats[:transactions_processed]}"
 puts "Throughput: #{(stats[:transactions_processed] / time1.real).round(2)} txns/sec"
 puts
 
-# Benchmark 2: Balance Change Calculation
-puts "Benchmark 2: Balance Change Calculation"
+# Benchmark 2: Asset Transfer Filtering
+puts "Benchmark 2: Asset Transfer Filtering"
 puts "-" * 50
 
 stats[:transactions_processed] = 0
 stats[:rounds_synced] = 0
 
 time2 = Benchmark.measure do
-  config = Algokit::Subscriber::Config.new(
+  config = Algokit::Subscriber::Types::SubscriptionConfig.new(
     filters: [{
-      name: "with-balance-changes",
+      name: "asset-transfers",
       filter: {
-        type: "pay",
-        balance_changes: true
+        type: "axfer"
       }
     }],
     max_rounds_to_sync: 100,
@@ -124,7 +123,7 @@ time2 = Benchmark.measure do
 
   subscriber = Algokit::Subscriber::AlgorandSubscriber.new(config, algod, indexer)
 
-  subscriber.on_batch("with-balance-changes") do |events|
+  subscriber.on_batch("asset-transfers") do |events|
     stats[:transactions_processed] += events.length
   end
 
@@ -135,7 +134,7 @@ puts "Time: #{time2.real.round(2)}s"
 puts "Rounds synced: #{stats[:rounds_synced]}"
 puts "Transactions processed: #{stats[:transactions_processed]}"
 puts "Throughput: #{(stats[:transactions_processed] / time2.real).round(2)} txns/sec"
-puts "Overhead vs basic filtering: #{(((time2.real / time1.real) - 1) * 100).round(2)}%"
+puts "Comparison to basic filtering: #{(((time2.real / time1.real) - 1) * 100).round(2)}%"
 puts
 
 # Benchmark 3: Batch Processing
@@ -147,7 +146,7 @@ stats[:transactions_processed] = 0
 stats[:rounds_synced] = 0
 
 time3 = Benchmark.measure do
-  config = Algokit::Subscriber::Config.new(
+  config = Algokit::Subscriber::Types::SubscriptionConfig.new(
     filters: [{
       name: "batch-test",
       filter: { type: "pay" }
@@ -186,11 +185,11 @@ puts "Average throughput: #{((stats[:transactions_processed] * 3) / (time1.real 
 puts
 puts "Performance Characteristics:"
 puts "  - Basic filtering: Fast, minimal overhead"
-puts "  - Balance changes: ~#{(((time2.real / time1.real) - 1) * 100).round(0)}% overhead"
+puts "  - Asset transfers: ~#{(((time2.real / time1.real) - 1) * 100).round(0)}% difference"
 puts "  - Batch processing: Efficient for high-volume scenarios"
 puts
 puts "Recommendations:"
 puts "  - Use batch handlers for high-volume applications"
-puts "  - Enable balance_changes only when needed"
+puts "  - Use specific filters to reduce processing overhead"
 puts "  - Use indexer for historical data (faster for bulk operations)"
 puts "  - Use algod with wait_for_block for low-latency real-time monitoring"

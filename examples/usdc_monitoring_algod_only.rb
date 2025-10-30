@@ -129,7 +129,7 @@ end
 
 # Print startup message
 puts "=" * 70
-puts "USDC Transfer Monitor (TestNet) - ALGOD ONLY"
+puts "USDC Transfer Monitor (MainNet) - ALGOD ONLY"
 puts "=" * 70
 puts "Asset ID: #{USDC_ASSET_ID}"
 puts "Starting watermark: #{load_watermark}"

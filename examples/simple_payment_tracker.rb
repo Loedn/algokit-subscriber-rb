@@ -10,8 +10,8 @@ require "bundler/setup"
 require "algokit/subscriber"
 
 # Configuration
-ALGOD_SERVER = ENV.fetch("ALGOD_SERVER", "https://testnet-api.algonode.cloud")
-INDEXER_SERVER = ENV.fetch("INDEXER_SERVER", "https://testnet-idx.algonode.cloud")
+ALGOD_SERVER = ENV.fetch("ALGOD_SERVER", "https://mainnet-api.algonode.cloud")
+INDEXER_SERVER = ENV.fetch("INDEXER_SERVER", "https://mainnet-idx.algonode.cloud")
 MIN_AMOUNT = 1_000_000 # 1 Algo (in microAlgos)
 
 # Create clients

@@ -6,7 +6,18 @@
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE.txt)
 
 A Ruby library for subscribing to Algorand blockchain transactions with comprehensive filtering, balance change tracking, and ARC-28 event support.
-This repo is a port of [Algokit Subscriber TS](https://github.com/algorandfoundation/algokit-subscriber-ts)
+
+This gem is a Ruby port of [AlgoKit Subscriber TS](https://github.com/algorandfoundation/algokit-subscriber-ts).
+
+## 📚 Documentation
+
+- **[Getting Started Guide](docs/GETTING_STARTED.md)** - New to AlgoKit Subscriber? Start here!
+- **[API Reference](docs/API_REFERENCE.md)** - Complete API documentation
+- **[Advanced Usage Guide](docs/ADVANCED_USAGE.md)** - Advanced patterns, optimization, and production deployment
+- **[Architecture & Internals](docs/ARCHITECTURE.md)** - Deep dive into how the gem works
+- **[Examples](examples/)** - Working examples for different use cases
+
+**Quick Links:** [Installation](#installation) · [Quick Start](#quick-start) · [Examples](#examples) · [Features](#features) · [Contributing](#contributing)
 
 ## Features
 
@@ -279,114 +290,21 @@ end
 
 ## Configuration Options
 
-### SubscriptionConfig
+For detailed configuration options, see the [API Reference - SubscriptionConfig](docs/API_REFERENCE.md#subscriptionconfig).
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `filters` | Array | `[]` | Transaction filters to subscribe to |
-| `arc28_events` | Array | `[]` | ARC-28 event definitions |
-| `max_rounds_to_sync` | Integer | `100` | Max rounds to sync per algod poll |
-| `max_indexer_rounds_to_sync` | Integer | `1000` | Max rounds to sync via indexer |
-| `sync_behaviour` | String | `'catchup-with-indexer'` | Sync strategy |
-| `frequency_in_seconds` | Float | `1.0` | Polling frequency |
-| `wait_for_block_when_at_tip` | Boolean | `true` | Use low-latency mode at tip |
-| `watermark_persistence` | Hash | `nil` | Watermark storage callbacks |
+### Quick Reference
 
-### Sync Behaviors
-
-- `catchup-with-indexer` - Use indexer for large gaps, algod for small gaps
+**Sync Behaviors:**
+- `catchup-with-indexer` - Use indexer for large gaps, algod for small gaps (default)
 - `sync-oldest` - Always sync from oldest unsynced round
 - `sync-oldest-start-now` - Skip history, start from current round
 - `skip-sync-newest` - Jump to latest round immediately
 - `fail` - Fail if behind
 
-### Transaction Filter Options
+**Transaction Filter Options:**
+`type`, `sender`, `receiver`, `note_prefix`, `app_id`, `asset_id`, `min_amount`, `max_amount`, `app_create`, `asset_create`, `app_on_complete`, `method_signature`, `balance_changes`, `arc28_events`, `custom_filter`
 
-| Filter | Type | Description |
-|--------|------|-------------|
-| `type` | String | Transaction type (`pay`, `axfer`, `acfg`, `appl`, `keyreg`, `afrz`) |
-| `sender` | String | Sender address |
-| `receiver` | String | Receiver address |
-| `note_prefix` | String | Note prefix (base64) |
-| `app_id` | Integer | Application ID |
-| `asset_id` | Integer | Asset ID |
-| `min_amount` | Integer | Minimum amount (microAlgos/base units) |
-| `max_amount` | Integer | Maximum amount |
-| `app_create` | Boolean | Application creation |
-| `asset_create` | Boolean | Asset creation |
-| `app_on_complete` | String | OnComplete action |
-| `method_signature` | String | ARC-4 method signature |
-| `balance_changes` | Array | Balance change filters |
-| `arc28_events` | Array | ARC-28 event filters |
-| `custom_filter` | Proc | Custom filter function |
-
-## API Reference
-
-### AlgorandSubscriber
-
-#### `new(config, algod, indexer = nil)`
-Creates a new subscriber instance.
-
-#### `on(filter_name, &block)`
-Register a handler for individual transactions matching the filter.
-
-#### `on_batch(filter_name, &block)`
-Register a handler for batches of transactions matching the filter.
-
-#### `on_before_poll(&block)`
-Register a handler called before each poll (receives watermark and current_round).
-
-#### `on_poll(&block)`
-Register a handler called after each poll (receives SubscriptionResult).
-
-#### `on_error(&block)`
-Register an error handler (receives error object).
-
-#### `poll_once`
-Execute a single poll cycle. Returns SubscriptionResult.
-
-#### `start(inspect_proc = nil, suppress_log: false)`
-Start continuous polling. Optionally pass an inspect proc for custom logging.
-
-#### `stop(reason = nil)`
-Stop the subscriber gracefully.
-
-#### `running?`
-Check if the subscriber is currently running.
-
-### Clients
-
-#### AlgodClient
-
-```ruby
-algod = Algokit::Subscriber::Client::AlgodClient.new(
-  'https://testnet-api.algonode.cloud',
-  token: 'your-token',
-  headers: { 'X-Custom-Header' => 'value' }
-)
-
-status = algod.status
-block = algod.block(round)
-algod.status_after_block(round) # Low-latency wait
-```
-
-#### IndexerClient
-
-```ruby
-indexer = Algokit::Subscriber::Client::IndexerClient.new(
-  'https://testnet-idx.algonode.cloud',
-  token: 'your-token'
-)
-
-result = indexer.search_transactions(
-  min_round: 1000,
-  max_round: 2000,
-  tx_type: 'pay',
-  address: 'ADDRESS_HERE'
-)
-
-health = indexer.health
-```
+See [API Reference - Transaction Filters](docs/API_REFERENCE.md#transaction-filters) for complete details.
 
 ## Examples
 
@@ -405,18 +323,28 @@ After checking out the repo, run `bin/setup` to install dependencies. Then, run 
 # Install dependencies
 bundle install
 
-# Run tests
+# Run all tests (255 tests, 83% coverage)
 bundle exec rspec
 
-# Run tests with coverage
+# Run tests with coverage report
 COVERAGE=true bundle exec rspec
 
-# Run specific test
+# Run documentation examples tests (66 tests)
+bundle exec rspec spec/documentation_examples_spec.rb
+
+# Run specific test file
 bundle exec rspec spec/client/algod_client_spec.rb
 
 # Run linter
 bundle exec rubocop
 ```
+
+### Test Suite
+
+- **255 tests total** including **66 documentation example tests**
+- **83% code coverage**
+- All code examples from documentation are tested
+- See [docs/TESTING.md](docs/TESTING.md) for detailed testing guide
 
 ## Architecture
 
@@ -437,6 +365,24 @@ The library is organized into several layers:
 - **Memory**: Processes in chunks, no accumulation
 - **Coverage**: 82% test coverage with 189 passing tests
 
+## Documentation
+
+### Full Documentation
+
+For comprehensive documentation, visit the [docs directory](docs/):
+
+- **[Getting Started Guide](docs/GETTING_STARTED.md)** - Installation, basic concepts, your first subscriber, and common patterns
+- **[API Reference](docs/API_REFERENCE.md)** - Complete API documentation for all classes and methods
+- **[Advanced Usage Guide](docs/ADVANCED_USAGE.md)** - Advanced filtering, balance tracking, ARC-28 events, sync strategies, performance optimization, error handling, production deployment, and monitoring
+- **[Architecture & Internals](docs/ARCHITECTURE.md)** - Deep dive into the gem's architecture, data flow, threading model, and design decisions
+
+### Learning Path
+
+1. **New users:** Start with [Getting Started Guide](docs/GETTING_STARTED.md)
+2. **Building features:** Check [API Reference](docs/API_REFERENCE.md) and [Examples](examples/)
+3. **Production deployment:** Read [Advanced Usage - Production Deployment](docs/ADVANCED_USAGE.md#production-deployment)
+4. **Understanding internals:** Explore [Architecture & Internals](docs/ARCHITECTURE.md)
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/loedn/algokit-subscriber-rb.
@@ -451,7 +397,7 @@ Please ensure:
 - All tests pass (`bundle exec rspec`)
 - Code follows style guide (`bundle exec rubocop`)
 - New features have tests
-- Documentation is updated
+- Documentation is updated (both inline and in `docs/`)
 
 ## License
 

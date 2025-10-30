@@ -14,11 +14,11 @@ require "algokit/subscriber"
 require "json"
 
 # Configuration
-ALGOD_SERVER = ENV.fetch("ALGOD_SERVER", "https://testnet-api.algonode.cloud")
+ALGOD_SERVER = ENV.fetch("ALGOD_SERVER", "https://mainnet-api.algonode.cloud")
 ALGOD_TOKEN = ENV.fetch("ALGOD_TOKEN", "")
 
-# USDC on TestNet (change for MainNet)
-USDC_ASSET_ID = 10_458_941
+# USDC on MainNet
+USDC_ASSET_ID = 31_566_704
 
 # Create algod client ONLY (no indexer needed)
 algod = Algokit::Subscriber::Client::AlgodClient.new(ALGOD_SERVER, token: ALGOD_TOKEN)

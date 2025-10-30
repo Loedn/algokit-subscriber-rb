@@ -13,9 +13,9 @@ require "algokit/subscriber"
 require "json"
 
 # Configuration
-ALGOD_SERVER = ENV.fetch("ALGOD_SERVER", "https://testnet-api.algonode.cloud")
+ALGOD_SERVER = ENV.fetch("ALGOD_SERVER", "https://mainnet-api.algonode.cloud")
 ALGOD_TOKEN = ENV.fetch("ALGOD_TOKEN", "")
-INDEXER_SERVER = ENV.fetch("INDEXER_SERVER", "https://testnet-idx.algonode.cloud")
+INDEXER_SERVER = ENV.fetch("INDEXER_SERVER", "https://mainnet-idx.algonode.cloud")
 INDEXER_TOKEN = ENV.fetch("INDEXER_TOKEN", "")
 DHM_ADDRESS = "ER7AMZRPD5KDVFWTUUVOADSOWM4RQKEEV2EDYRVSA757UHXOIEKGMBQIVU"
 
